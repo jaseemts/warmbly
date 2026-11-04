@@ -57,6 +57,7 @@ export const dashboardPages = {
     labels: () => import("./app/app/contacts/labels/page"),
     suppressions: () => import("./app/app/contacts/suppressions/page"),
     forms: () => import("./app/app/forms/page"),
+    leads: () => import("./app/app/leads/page"),
     form: () => import("./app/app/forms/[id]/page"),
     campaigns: () => import("./app/app/campaigns/page"),
     campaignLayout: () => import("./app/app/campaigns/[id]/layout"),
@@ -347,6 +348,7 @@ const clayRoute = dash(appRoute, "integrations/clay/$id", dashboardPages.clay, "
 const automationsRoute = dash(appRoute, "automations", dashboardPages.automations, "Automations", loaders.automationsLoader);
 const automationRoute = dash(appRoute, "automations/$id", dashboardPages.automation, "Automation", loaders.automationLoader);
 const auditRoute = dash(appRoute, "audit", dashboardPages.audit, "Audit log", loaders.auditLoader);
+const leadsRoute = dash(appRoute, "leads", dashboardPages.leads, "Lead finder", loaders.leadsLoader);
 // Link buttons sent before the link page moved out of the dashboard.
 const appSlackLinkRoute = forward(appRoute, "slack/link", "/slack/link", true);
 // The breadcrumb above the link page points here.
@@ -445,6 +447,7 @@ const routeTree = rootRoute.addChildren([
         automationsRoute,
         automationRoute,
         auditRoute,
+        leadsRoute,
         appSlackLinkRoute,
         slackRoute,
         settingsRoute.addChildren(settingsChildren),

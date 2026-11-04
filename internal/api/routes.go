@@ -897,6 +897,34 @@ func Run(
 				}
 			}
 
+			// Lead finder: businesses found on a map become leads, then contacts.
+			// Leads are prospect contacts, so the contact permissions gate them.
+			leads := protected.Group("/leads")
+			leads.Use(m.RateLimitMiddleware(models.RateLimitWrite), middleware.UUIDParams("id"))
+			{
+				viewLeads := m.RequireAccess(models.PermViewContacts, models.APIPermReadContacts)
+				writeLeads := m.RequireAccess(models.PermManageContacts, models.APIPermWriteContacts)
+				bulkLeads := m.RequireAccess(models.PermManageContacts, models.APIPermBulkContacts)
+				leads.GET("/config", viewLeads, h.LeadFinderConfig)
+				leads.GET("/geocode", viewLeads, h.LeadFinderGeocode)
+				leads.POST("/search", writeLeads, h.SearchLeads)
+				leads.POST("/query", viewLeads, h.QueryLeads)
+				leads.POST("/points", viewLeads, h.LeadPoints)
+				leads.POST("/facets", viewLeads, h.LeadFacets)
+				leads.POST("/export", viewLeads, h.ExportLeads)
+				leads.PATCH("", bulkLeads, h.UpdateLeads)
+				leads.DELETE("", bulkLeads, h.DeleteLeads)
+				leads.POST("/enrich", bulkLeads, h.EnrichLeads)
+				leads.GET("/enrichments", viewLeads, h.LeadEnrichmentRuns)
+				leads.GET("/enrichments/:id", viewLeads, h.LeadEnrichmentRun)
+				leads.POST("/contacts", bulkLeads, h.AddLeadsToContacts)
+				leads.GET("/searches", viewLeads, h.LeadSearches)
+				leads.PATCH("/searches/:id", writeLeads, h.UpdateLeadSearch)
+				leads.DELETE("/searches/:id", writeLeads, h.DeleteLeadSearch)
+				leads.GET("/:id", viewLeads, h.GetLead)
+				leads.PATCH("/:id", writeLeads, h.UpdateLead)
+			}
+
 			contacts := protected.Group("/contacts")
 			contacts.Use(m.RateLimitMiddleware(models.RateLimitWrite), middleware.UUIDParams("id"))
 			{
